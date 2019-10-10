@@ -1,36 +1,17 @@
-import React, {Component} from 'react';
-import axios from 'axios';
+import React from 'react';
 
-class Stop extends React.Component {
-
-  constructor()
-  {
-    super();
-     this.state =   {
-       "data":{
-       "stops" : []
-       }
-     }
-  }
-
-  componentDidMount() {
-    axios.get("https://transit.land/api/v1/stops?served_by=o-dr4e-portauthoritytransitcorporation")
-      .then(res => {
-        this.setState(res);
-      });
-  }
-
+class Stops extends React.Component {
+ 
   render(){
-    const stops = this.state.data.stops.map(m=>m);
+    
     return (
-        <ul className="stopsList">
-            {
-                stops.map(m=><li> 
-                                <button id={m.osm_way_id}>{m.name}</button>
-                            </li>)}
-        </ul>
+      <div className="stopItem">
+          <button  id={this.props.stopItem.onestop_id} onClick={()=>this.props.handleStopClick(this.props.stopItem.onestop_id)}>
+            {this.props.stopItem.name}
+          </button>
+      </div>
     );
   }
 }
 
-export default Stop;
+export default Stops;

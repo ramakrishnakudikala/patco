@@ -25,3 +25,11 @@ code {
   display:flex;
   height:3.125rem;
 }
+
+.stopsList button{
+  padding : 0;
+  margin: 10px;
+  cursor: pointer;
+  border-color: transparent;
+}
+
