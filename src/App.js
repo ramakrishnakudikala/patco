@@ -13,7 +13,7 @@ class App extends React.Component {
        
        "stops" : [
           ],
-        "timings":[]
+        "stopPairs":[]
        
      };
      this.handleStopClick = this.handleStopClick.bind(this);
@@ -25,7 +25,7 @@ class App extends React.Component {
       
         this.setState((prevState)=>{
           
-          return {"stops":res.data.stops,"timings":[]};
+          return {"stops":res.data.stops,"stopPairs":[]};
 
         });
       });
@@ -33,7 +33,18 @@ class App extends React.Component {
 
   handleStopClick(id){
     console.log("clicked", id);
-    const timingsGetUrl = "https://transit.land/api/v1/schedule_stop_pairs?feed_onestop_id=f-dr4e-patco&origin_onestop_id="+id+"&origin_departure_between=08:00:00,08:20:00&date=today";
+    let today = new Date();
+    let hh = today.getHours();
+    let mm = today.getMinutes();
+    let ss = today.getSeconds();
+    let fromTime = `${hh}:${mm}:${ss}`;
+    today.setMinutes(today.getMinutes()+25);
+    let maxHH = today.getHours();
+    let maxMM = today.getMinutes();
+    let maxSS = today.getSeconds();
+    let maxTime = `${maxHH}:${maxMM}:${maxSS}`;
+
+    const timingsGetUrl = `https://transit.land/api/v1/schedule_stop_pairs?feed_onestop_id=f-dr4e-patco&origin_onestop_id=${id}&origin_departure_between=${fromTime},${maxTime}&date=today`;
     axios.get(timingsGetUrl)
          .then(
            res => {
@@ -41,7 +52,14 @@ class App extends React.Component {
           
               return {
                       "stops":prevState.stops,
-                      "timings":res.data.schedule_stop_pairs.map(t=>t.origin_departure_time)
+                      "stopPairs":res.data.schedule_stop_pairs.map(function(s){
+
+                        return {
+                                  "trip":s.trip,
+                                  "departureTime" : s.origin_departure_time,
+                                  "tripHeadSign" : s.trip_headsign
+                               }
+                      })
                     };
     
             });
@@ -60,7 +78,7 @@ class App extends React.Component {
         {stopItems}
       </div>
       <div>
-          <Timings departureTimes={this.state.timings} />
+          <Timings stopPairs={this.state.stopPairs} />
       </div>
     </div>
   );
